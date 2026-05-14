@@ -1,0 +1,33 @@
+import heapq
+from collections import defaultdict
+class Twitter:
+
+    def __init__(self):
+        self.following=defaultdict(set)
+        self.tweets=defaultdict(list)
+        self.time=0
+
+    def postTweet(self, userId: int, tweetId: int) -> None:
+        self.tweets[userId].append((self.time,tweetId))
+        self.time +=1
+
+    def getNewsFeed(self, userId: int) -> List[int]:
+        heap=[]
+        self.following[userId].add(userId)
+
+        for followee in self.following[userId]:
+            for time, tweetId in self.tweets[followee]:
+                heapq.heappush(heap,(-time, tweetId))
+        result=[]
+        while heap and len(result)<10:
+            time,tweetId=heapq.heappop(heap)
+            result.append(tweetId)
+        
+        return result
+
+    def follow(self, followerId: int, followeeId: int) -> None:
+        self.following[followerId].add(followeeId)
+
+    def unfollow(self, followerId: int, followeeId: int) -> None:
+        if followerId != followeeId:
+            self.following[followerId].discard(followeeId)
